@@ -24,6 +24,10 @@ export default function App() {
   ];
 
   useEffect(() => {
+    handleGenerate();
+  }, []);
+
+  useEffect(() => {
     let interval: any;
     if (isGenerating) {
       interval = setInterval(() => {
@@ -111,33 +115,32 @@ export default function App() {
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <button
-                  onClick={handleGenerate}
-                  disabled={isGenerating}
-                  className="group relative px-8 py-4 bg-[#1a1a1a] text-white rounded-2xl text-lg font-medium overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 min-w-[300px]"
-                >
-                  {isGenerating ? (
+                {isGenerating ? (
+                  <div className="flex items-center justify-center gap-3 px-8 py-4 bg-[#1a1a1a] text-white rounded-2xl text-lg font-medium min-w-[300px]">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={loadingStep}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="text-sm"
+                      >
+                        {loadingMessages[loadingStep]}
+                      </motion.span>
+                    </AnimatePresence>
+                  </div>
+                ) : error ? (
+                  <button
+                    onClick={handleGenerate}
+                    className="group relative px-8 py-4 bg-red-600 text-white rounded-2xl text-lg font-medium overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] min-w-[300px]"
+                  >
                     <span className="flex items-center justify-center gap-3">
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <AnimatePresence mode="wait">
-                        <motion.span
-                          key={loadingStep}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="text-sm"
-                        >
-                          {loadingMessages[loadingStep]}
-                        </motion.span>
-                      </AnimatePresence>
-                    </span>
-                  ) : (
-                    <span className="flex items-center justify-center gap-3">
-                      Começar Reconstrução
+                      Tentar Novamente
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </span>
-                  )}
-                </button>
+                  </button>
+                ) : null}
               </div>
 
               {error && (
